@@ -1,7 +1,7 @@
 package dhbw.de.chargefinder;
 
+import android.location.Address;
 import android.os.AsyncTask;
-import android.text.style.AlignmentSpan;
 
 import com.google.api.client.http.GenericUrl;
 import com.google.api.client.http.HttpRequest;
@@ -17,53 +17,54 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 
 /**
  * Created by Marco on 30.05.2015.
  */
-public class Search extends AsyncTask<Object, Integer, ArrayList<OpenChargePoint>> {
+public class SearchAsync extends AsyncTask<Address, Integer, ArrayList<OpenChargePoint>> {
 
-    public interface AsyncListener {
+    public interface SearchAsyncListener {
         public void updateListView (ArrayList<OpenChargePoint> points);
     }
 
-    AsyncListener asyncListener;
+    private SearchAsyncListener callback;
 
-    public Search(AsyncListener asyncListener) {
-        this.asyncListener = asyncListener;
+    public SearchAsync(SearchAsyncListener callback) {
+        this.callback = callback;
     }
 
     @Override
-    protected ArrayList<OpenChargePoint> doInBackground(Object[] params) {
+    protected ArrayList<OpenChargePoint> doInBackground(Address[] addresses) {
 
 //        publishProgress();
 
-        String query = "" + params[params.length - 1];
-        query = query.replaceAll(" ", "+");
-        //TODO: Prevent injection
+//        //TODO: Prevent injection
+
+        String lat = String.valueOf(addresses[0].getLatitude());
+        String lon = String.valueOf(addresses[0].getLongitude());
 
         try {
             HttpTransport httpTransport = new NetHttpTransport();
             HttpRequestFactory requestFactory = httpTransport.createRequestFactory();
-
-            GenericUrl coordUrl =
-                    new GenericUrl("http://nominatim.openstreetmap.org/search");
-            coordUrl.put("format", "json");
-            coordUrl.put("q", query);
-
-            HttpRequest coordRequest = requestFactory.buildGetRequest(coordUrl);
-            HttpResponse coordResponse = coordRequest.execute();
-
-            String coordOutput = coordResponse.parseAsString();
-
-            JSONArray coordWholeArray = new JSONArray(coordOutput);
-            JSONObject coordFirstObject = (JSONObject) coordWholeArray.get(0);
-
-            String lat = saveStringRead(coordFirstObject, "lat");
-            String lon = saveStringRead(coordFirstObject, "lon");
-
+/*
+            Eigener Webserviceaufruf durch Nutzung von Geocoder nicht mehr notwendig
+ */
+//            GenericUrl coordUrl =
+//                    new GenericUrl("http://nominatim.openstreetmap.org/search");
+//            coordUrl.put("format", "json");
+//            coordUrl.put("q", query);
+//
+//            HttpRequest coordRequest = requestFactory.buildGetRequest(coordUrl);
+//            HttpResponse coordResponse = coordRequest.execute();
+//
+//            String coordOutput = coordResponse.parseAsString();
+//
+//            JSONArray coordWholeArray = new JSONArray(coordOutput);
+//            JSONObject coordFirstObject = (JSONObject) coordWholeArray.get(0);
+//
+//            String lat = saveStringRead(coordFirstObject, "lat");
+//            String lon = saveStringRead(coordFirstObject, "lon");
 
             // Now use the coordinates to address the opencharge webservice
             GenericUrl chargeUrl =
@@ -172,7 +173,7 @@ public class Search extends AsyncTask<Object, Integer, ArrayList<OpenChargePoint
     protected void onPostExecute(ArrayList<OpenChargePoint> results) {
         // OpenChargePoints an UI übergeben
         if(results != null) {
-            asyncListener.updateListView(results);
+            callback.updateListView(results);
         }
     }
 

@@ -1,6 +1,10 @@
 package dhbw.de.chargefinder;
 
 import android.content.Context;
+import android.location.Address;
+import android.location.Geocoder;
+import android.location.Location;
+import android.location.LocationProvider;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -12,10 +16,14 @@ import android.widget.ImageButton;
 import android.widget.ListView;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 
 
 // TODO zur Deprecation: http://stackoverflow.com/questions/29877692/why-was-actionbaractivity-deprecated
-public class MainActivity extends ActionBarActivity implements Search.AsyncListener {
+public class MainActivity extends ActionBarActivity implements SearchAsync.SearchAsyncListener,
+        GeocoderAsync.GeocoderAsyncListener, LocationFinderAsync.LocationFinderAsyncListener
+{
 
     protected EditText _editText_search = null;
     protected ImageButton _btn_search = null;
@@ -47,16 +55,19 @@ public class MainActivity extends ActionBarActivity implements Search.AsyncListe
                 if (mobile == NetworkInfo.State.CONNECTED || mobile == NetworkInfo.State.CONNECTING
                         || wifi == NetworkInfo.State.CONNECTED || wifi == NetworkInfo.State.CONNECTING)
                 {
-                    // Prepare parameter for Search callback
-                    // TODO das ist noch nich schoen...
-
-                    Object[] param = new Object[3];
-                    param[0] = _listView_searchResults;
-                    param[1] = this;
-                    param[2] = _editText_search.getText().toString();
-                    Search s = new Search(MainActivity.this);
-                    s.execute(param);
+                    new GeocoderAsync(MainActivity.this).
+                            execute(_editText_search.getText().toString());
                 }
+                else {
+                    // TODO Benachrichtigen dass keine Internetverbindung besteht
+                }
+            }
+        });
+
+        _btn_searchPosition.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                new LocationFinderAsync(MainActivity.this).execute();
             }
         });
 
@@ -70,5 +81,30 @@ public class MainActivity extends ActionBarActivity implements Search.AsyncListe
                 points);
 
         _listView_searchResults.setAdapter(arrayAdapter);
+    }
+
+    @Override
+    public void receiveAddresses(List<Address> addresses) {
+
+        // TODO: "Meinten Sie..." einbauen. Momentan wird nur die erste Addresse genutzt
+
+        new SearchAsync(MainActivity.this).
+                execute(addresses.toArray(new Address[addresses.size()]));
+    }
+
+    @Override
+    public void receiveLocation(double lat, double lon) {
+        Address a = new Address(Locale.getDefault());
+        a.setLatitude(lat);
+        a.setLongitude(lon);
+
+        List<Address> addressList = new ArrayList<Address>();
+        addressList.add(a);
+
+    }
+
+    @Override
+    public Context getContext(){
+        return this;
     }
 }
