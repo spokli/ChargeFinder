@@ -1,9 +1,13 @@
 package dhbw.de.chargefinder;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
+import android.location.LocationManager;
 import android.location.LocationProvider;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -67,7 +71,8 @@ public class MainActivity extends ActionBarActivity implements SearchAsync.Searc
         _btn_searchPosition.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                new LocationFinderAsync(MainActivity.this).execute();
+                gpsAlert();
+//                new LocationFinderAsync(MainActivity.this).execute();
             }
         });
 
@@ -101,10 +106,52 @@ public class MainActivity extends ActionBarActivity implements SearchAsync.Searc
         List<Address> addressList = new ArrayList<Address>();
         addressList.add(a);
 
+        receiveAddresses(addressList);
     }
 
     @Override
     public Context getContext(){
         return this;
     }
+
+    private void gpsAlert(){
+
+        LocationManager locationManager =
+                (LocationManager) getSystemService(LOCATION_SERVICE);
+
+        if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+            final AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+            builder.setMessage("Your GPS seems to be disabled, do you want to enable it?")
+                    .setCancelable(false)
+                    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                        public void onClick(final DialogInterface dialog, final int id) {
+                            startActivityForResult(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS), 1);
+                        }
+                    })
+                    .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                        public void onClick(final DialogInterface dialog, final int id) {
+                            dialog.cancel();
+                            new LocationFinderAsync(MainActivity.this).execute();
+                        }
+                    });
+            final AlertDialog alert = builder.create();
+             alert.show();
+
+
+        }
+        else new LocationFinderAsync(MainActivity.this).execute();
+
+    }
+
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        if (requestCode == 1) {
+            //GPS-Einstellungen
+            new LocationFinderAsync(MainActivity.this).execute();
+        }
+    }//onActivityResult
+
+//    private void onCloseGpsAlert(){
+//
+//    }
 }
