@@ -22,6 +22,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -47,7 +48,6 @@ public class MainActivity extends ActionBarActivity implements SearchAsync.Searc
         _btn_searchPosition = (ImageButton) findViewById(R.id.btn_searchPosition);
         _btn_searchSettings = (ImageButton) findViewById(R.id.btn_searchSettings);
         _listView_searchResults = (ListView) findViewById(R.id.listView_searchResults);
-
 
         _btn_search.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
@@ -80,10 +80,15 @@ public class MainActivity extends ActionBarActivity implements SearchAsync.Searc
             @Override
             public boolean onLongClick(View view) {
 
-                String[] sources = new String[]{"GPS", "Netzwerk", "Passive"};
+                String[] sources = new String[]{
+                        getResources().getString(R.string.geoSource_gps),
+                        getResources().getString(R.string.geoSource_net),
+                        getResources().getString(R.string.geoSource_pas)};
 
                 AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-                builder.setTitle("GEO-Source wählen");
+
+                builder.setTitle(new String(getResources().getString(R.string.geoSource)));
+
                 builder.setItems(sources, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         // The 'which' argument contains the index position
@@ -154,14 +159,14 @@ public class MainActivity extends ActionBarActivity implements SearchAsync.Searc
 
         if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
             final AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-            builder.setMessage("Your GPS seems to be disabled, do you want to enable it?")
+            builder.setMessage(getResources().getString(R.string.geoAktivieren))
                     .setCancelable(false)
-                    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    .setPositiveButton(getResources().getString(R.string.ja), new DialogInterface.OnClickListener() {
                         public void onClick(final DialogInterface dialog, final int id) {
                             startActivityForResult(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS), 1);
                         }
                     })
-                    .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    .setNegativeButton(getResources().getString(R.string.nein), new DialogInterface.OnClickListener() {
                         public void onClick(final DialogInterface dialog, final int id) {
                             dialog.cancel();
                             new LocationFinderAsync(MainActivity.this).execute();

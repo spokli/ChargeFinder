@@ -4,20 +4,29 @@ import android.location.Address;
 import android.os.AsyncTask;
 
 import com.google.api.client.http.GenericUrl;
+import com.google.api.client.http.HttpEncoding;
 import com.google.api.client.http.HttpRequest;
 import com.google.api.client.http.HttpRequestFactory;
 import com.google.api.client.http.HttpResponse;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.util.DateTime;
+import com.google.api.client.util.StreamingContent;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
+import java.util.zip.GZIPInputStream;
 
 /**
  * Created by Marco on 30.05.2015.
@@ -25,7 +34,7 @@ import java.util.ArrayList;
 public class SearchAsync extends AsyncTask<Address, Integer, ArrayList<OpenChargePoint>> {
 
     public interface SearchAsyncListener {
-        public void updateListView (ArrayList<OpenChargePoint> points);
+        public void updateListView(ArrayList<OpenChargePoint> points);
     }
 
     private SearchAsyncListener callback;
@@ -77,13 +86,13 @@ public class SearchAsync extends AsyncTask<Address, Integer, ArrayList<OpenCharg
 
             HttpRequest chargeRequest = requestFactory.buildGetRequest(chargeUrl);
 
-//            chargeRequest.setResponseHeaders(chargeRequest.getResponseHeaders().
-//                    setContentType("application/json; charset=UTF-8").
-//                    setContentEncoding("UTF-8"));
+            chargeRequest.setResponseHeaders(chargeRequest.getResponseHeaders().
+                    setContentType("application/json; charset=utf-8").
+                    setContentEncoding("UTF-8"));
 
             HttpResponse chargeResponse = chargeRequest.execute();
 
-            String chargeOutput = chargeResponse.parseAsString();
+            String chargeOutput = decompress(chargeResponse.getContent());
 
             JSONArray chargeWholeArray = new JSONArray(chargeOutput);
             ArrayList<OpenChargePoint> points = new ArrayList<OpenChargePoint>();
@@ -172,14 +181,29 @@ public class SearchAsync extends AsyncTask<Address, Integer, ArrayList<OpenCharg
     @Override
     protected void onPostExecute(ArrayList<OpenChargePoint> results) {
         // OpenChargePoints an UI übergeben
-        if(results != null) {
+        if (results != null) {
             callback.updateListView(results);
         }
     }
 
+    private String decompress(InputStream is) {
+        try {
+            BufferedReader bf = new BufferedReader(new InputStreamReader(is, "UTF-8"));
+            String line;
+            String outStr = "";
+            while ((line = bf.readLine()) != null) {
+                outStr += line;
+            }
+            return outStr;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return "";
+    }
+
     //---------------------Private Methoden für Exception-sicheres JSON-Parsing-------
 
-    private String saveStringRead(JSONObject origin, String param){
+    private String saveStringRead(JSONObject origin, String param) {
         try {
             return origin.getString(param);
         } catch (JSONException e) {
@@ -187,27 +211,29 @@ public class SearchAsync extends AsyncTask<Address, Integer, ArrayList<OpenCharg
         }
     }
 
-    private double saveDoubleRead(JSONObject origin, String param){
-        try{
+    private double saveDoubleRead(JSONObject origin, String param) {
+        try {
             return origin.getDouble(param);
-        } catch(JSONException e) {
+        } catch (JSONException e) {
             return 0.0;
         }
     }
 
-    private int saveIntRead(JSONObject origin, String param){
-        try{
+    private int saveIntRead(JSONObject origin, String param) {
+        try {
             return origin.getInt(param);
-        } catch(JSONException e) {
+        } catch (JSONException e) {
             return 0;
         }
     }
 
-    private boolean saveBooleanRead(JSONObject origin, String param){
-        try{
+    private boolean saveBooleanRead(JSONObject origin, String param) {
+        try {
             return origin.getBoolean(param);
-        } catch(JSONException e) {
+        } catch (JSONException e) {
             return false;
         }
     }
+
+
 }

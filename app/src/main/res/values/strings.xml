@@ -1,6 +1,15 @@
 <resources>
-    <string name="app_name">ChargeFinder</string>
-
-    <string name="search">Suche…</string>
-    <string name="action_settings">Settings</string>
+    <string name="app_name">"ChargeFinder"</string>
+    <string name="action_settings">"Einstellungen"</string>
+    <string name="search">"Suche…"</string>
+    <string name="geoSource">"Geo-Source wählen…"</string>
+    <string name="ja">"Ja"</string>
+    <string name="nein">"Nein"</string>
+    <string name="geoAktivieren">"Ihr GPS ist deaktiviert. Möchten Sie es aktivieren?"</string>
+    <string name="geoSource_gps">"GPS"</string>
+    <string name="geoSource_net">"Netzwerk"</string>
+    <string name="geoSource_pas">"Passiv"</string>
+    <string name="geoSearch1">"Suche Standort durch "</string>
+    <string name="geoSearch2">"-Verbindung…"</string>
+    <string name="geoNoResult">"Kein Standort gefunden."</string>
 </resources>
