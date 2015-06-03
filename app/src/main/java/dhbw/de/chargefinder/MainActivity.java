@@ -1,6 +1,8 @@
 package dhbw.de.chargefinder;
 
 import android.app.AlertDialog;
+import android.app.Dialog;
+import android.app.DialogFragment;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -14,6 +16,7 @@ import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -26,8 +29,7 @@ import java.util.Locale;
 
 // TODO zur Deprecation: http://stackoverflow.com/questions/29877692/why-was-actionbaractivity-deprecated
 public class MainActivity extends ActionBarActivity implements SearchAsync.SearchAsyncListener,
-        GeocoderAsync.GeocoderAsyncListener, LocationFinderAsync.LocationFinderAsyncListener
-{
+        GeocoderAsync.GeocoderAsyncListener, LocationFinderAsync.LocationFinderAsyncListener {
 
     protected EditText _editText_search = null;
     protected ImageButton _btn_search = null;
@@ -57,12 +59,10 @@ public class MainActivity extends ActionBarActivity implements SearchAsync.Searc
                 NetworkInfo.State wifi = conMan.getNetworkInfo(1).getState();   // Wifi
 
                 if (mobile == NetworkInfo.State.CONNECTED || mobile == NetworkInfo.State.CONNECTING
-                        || wifi == NetworkInfo.State.CONNECTED || wifi == NetworkInfo.State.CONNECTING)
-                {
+                        || wifi == NetworkInfo.State.CONNECTED || wifi == NetworkInfo.State.CONNECTING) {
                     new GeocoderAsync(MainActivity.this).
                             execute(_editText_search.getText().toString());
-                }
-                else {
+                } else {
                     // TODO Benachrichtigen dass keine Internetverbindung besteht
                 }
             }
@@ -71,11 +71,44 @@ public class MainActivity extends ActionBarActivity implements SearchAsync.Searc
         _btn_searchPosition.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                // Prüfe ob GPS aktiv, frage user und starte LocationFinder
                 gpsAlert();
-//                new LocationFinderAsync(MainActivity.this).execute();
             }
         });
 
+        _btn_searchPosition.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+
+                String[] sources = new String[]{"GPS", "Netzwerk", "Passive"};
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                builder.setTitle("GEO-Source wählen");
+                builder.setItems(sources, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        // The 'which' argument contains the index position
+                        // of the selected item
+                        switch (which) {
+                            case 0:
+                                // Prüfe ob GPS aktiv, frage user und starte LocationFinder
+                                gpsAlert();
+                                new LocationFinderAsync(MainActivity.this, LocationManager.GPS_PROVIDER).execute();
+                                break;
+                            case 1:
+                                new LocationFinderAsync(MainActivity.this, LocationManager.NETWORK_PROVIDER).execute();
+                                break;
+                            case 2:
+                                new LocationFinderAsync(MainActivity.this, LocationManager.PASSIVE_PROVIDER).execute();
+                                break;
+                        }
+                    }
+                });
+                AlertDialog d = builder.create();
+                d.show();
+                return true;
+            }
+
+        });
     }
 
     @Override
@@ -110,11 +143,11 @@ public class MainActivity extends ActionBarActivity implements SearchAsync.Searc
     }
 
     @Override
-    public Context getContext(){
+    public Context getContext() {
         return this;
     }
 
-    private void gpsAlert(){
+    private void gpsAlert() {
 
         LocationManager locationManager =
                 (LocationManager) getSystemService(LOCATION_SERVICE);
@@ -135,11 +168,10 @@ public class MainActivity extends ActionBarActivity implements SearchAsync.Searc
                         }
                     });
             final AlertDialog alert = builder.create();
-             alert.show();
+            alert.show();
 
 
-        }
-        else new LocationFinderAsync(MainActivity.this).execute();
+        } else new LocationFinderAsync(MainActivity.this).execute();
 
     }
 

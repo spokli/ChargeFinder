@@ -11,6 +11,13 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.widget.Toast;
+
+import com.google.api.client.util.DateTime;
+
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Timer;
 
 /**
  * Created by Marco on 02.06.2015.
@@ -20,6 +27,7 @@ public class LocationFinderAsync extends AsyncTask<Void, Void, Location> {
     Location location; // location
     ProgressDialog progDialog;
     LocationManager locationManager;
+    String locationProvider;
     MyLocationListener listener;
 
     public interface LocationFinderAsyncListener {
@@ -35,6 +43,12 @@ public class LocationFinderAsync extends AsyncTask<Void, Void, Location> {
         this.location = null;
     }
 
+    public LocationFinderAsync(LocationFinderAsyncListener callback, String locationProvider) {
+        this.callback = callback;
+        this.location = null;
+        this.locationProvider = locationProvider;
+    }
+
     @Override
     protected void onPreExecute() {
         // Get the location manager
@@ -43,20 +57,25 @@ public class LocationFinderAsync extends AsyncTask<Void, Void, Location> {
                         getSystemService(callback.getContext().LOCATION_SERVICE);
 
         listener = new MyLocationListener();
+        String locationProviderName = "";
 
-//        gpsEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
-//        networkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+//        boolean gpsEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+//        boolean networkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+//
+//        if (gpsEnabled) {
+//            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, listener);
+//            locationProviderName = "GPS";
+//        } else if (networkEnabled) {
+//            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, listener);
+//            locationProviderName = "Netzwerk";
 
-        Criteria criteria = new Criteria();
-        criteria.setAccuracy(Criteria.ACCURACY_FINE);
-        criteria.setAltitudeRequired(false);
-        criteria.setBearingRequired(false);
-        criteria.setCostAllowed(true);
-        criteria.setPowerRequirement(Criteria.POWER_LOW);
-        String locationProvider = locationManager.getBestProvider(criteria, true);
+        if (locationProvider == null) {
+            String locationProvider = locationManager.getBestProvider(new Criteria(), true);
+        }
 
         if (locationProvider != null) {
             locationManager.requestLocationUpdates(locationProvider, 0, 0, listener);
+            locationProviderName = locationProvider;
         } else {
             // Keine Verbindung. Lese letzten bekannten Standort
             Location lastNetworkLocation = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
@@ -64,6 +83,7 @@ public class LocationFinderAsync extends AsyncTask<Void, Void, Location> {
 
             if (lastNetworkLocation == null && lastGpsLocation == null) {
                 //TODO kein Standort verfügbar, User benachrichtigen
+                this.cancel(true);
                 return;
             }
 
@@ -88,7 +108,8 @@ public class LocationFinderAsync extends AsyncTask<Void, Void, Location> {
                 LocationFinderAsync.this.cancel(true);
             }
         });
-        progDialog.setMessage("Suche Standort durch " + locationProvider + "-Verbindung...");
+
+        progDialog.setMessage("Suche Standort durch " + locationProviderName + "-Verbindung...");
         progDialog.setIndeterminate(true);
         progDialog.setCancelable(true);
         progDialog.setCanceledOnTouchOutside(false);
@@ -97,17 +118,20 @@ public class LocationFinderAsync extends AsyncTask<Void, Void, Location> {
 
     @Override
     protected void onCancelled() {
-        System.out.println("Cancelled by user!");
-        progDialog.dismiss();
+        if (progDialog != null & progDialog.isShowing()) {
+            progDialog.dismiss();
+        }
+        Toast.makeText(callback.getContext(), "Kein Standort gefunden.", Toast.LENGTH_SHORT).show();
         locationManager.removeUpdates(listener);
     }
 
     @Override
     protected Location doInBackground(Void[] params) {
-        while (this.location == null) {
-
+        long timeBefore = Calendar.getInstance().getTime().getTime();
+        long maxTime = timeBefore + 10 * 10000;
+        while (this.location == null && Calendar.getInstance().getTime().getTime() < maxTime) {
+            //Warte
         }
-        float test = location.getAccuracy();
         return location;
 
 //        Location location = locationManager.getLastKnownLocation(provider); // Wenn kein GPS
@@ -118,8 +142,15 @@ public class LocationFinderAsync extends AsyncTask<Void, Void, Location> {
 
     @Override
     protected void onPostExecute(Location result) {
-        progDialog.dismiss();
-        callback.receiveLocation(result.getLatitude(), result.getLongitude());
+        if (progDialog != null & progDialog.isShowing()) {
+            progDialog.dismiss();
+        }
+
+        if (result != null) {
+            callback.receiveLocation(result.getLatitude(), result.getLongitude());
+        } else {
+            Toast.makeText(callback.getContext(), "Kein Standort gefunden.", Toast.LENGTH_SHORT).show();
+        }
     }
 
     /*
