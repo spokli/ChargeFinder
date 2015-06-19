@@ -6,6 +6,7 @@ import com.google.api.client.util.DateTime;
 import java.util.ArrayList;
 
 /**
+ * Repraesentiert eine Ladestation
  * Created by Marco on 30.05.2015.
  */
 public class OpenChargePoint {

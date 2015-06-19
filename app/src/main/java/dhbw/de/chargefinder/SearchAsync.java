@@ -1,81 +1,79 @@
 package dhbw.de.chargefinder;
 
+import android.app.ProgressDialog;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.res.Resources;
 import android.location.Address;
 import android.os.AsyncTask;
+import android.widget.Toast;
 
 import com.google.api.client.http.GenericUrl;
-import com.google.api.client.http.HttpEncoding;
 import com.google.api.client.http.HttpRequest;
 import com.google.api.client.http.HttpRequestFactory;
 import com.google.api.client.http.HttpResponse;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.util.DateTime;
-import com.google.api.client.util.StreamingContent;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
-import java.util.zip.GZIPInputStream;
 
 /**
- * Created by Marco on 30.05.2015.
+ * Asynchroner Task zum Erhalt von Positionsdaten aus Suchbegriff
  */
-public class SearchAsync extends AsyncTask<Address, Integer, ArrayList<OpenChargePoint>> {
+public class SearchAsync extends AsyncTask<Address, String, ArrayList<OpenChargePoint>> {
 
+    /**
+     * Callback Interface
+     */
     public interface SearchAsyncListener {
-        public void updateListView(ArrayList<OpenChargePoint> points);
+        void updateListView(ArrayList<OpenChargePoint> points);
+        Context getContext();
     }
 
     private SearchAsyncListener callback;
+    private ProgressDialog progDialog;
+    private Resources res;
 
+    /**
+     * Konstruktor
+     * @param callback Activity-Klasse
+     */
     public SearchAsync(SearchAsyncListener callback) {
         this.callback = callback;
+
+        res = callback.getContext().getResources();
     }
 
+    /**
+     * Asynchrone Hintergrundverarbeitung: Sucht Ladestationen anhand von Koordinaten
+     * @param addresses Koordinaten, die Web-API uebergeben werden sollen
+     * @return Ermittelte Ladestationen in der Naehe
+     */
     @Override
     protected ArrayList<OpenChargePoint> doInBackground(Address[] addresses) {
 
-//        publishProgress();
-
-//        //TODO: Prevent injection
+        // Zeige beschaeftigt-Meldung
+        publishProgress(res.getString(R.string.searching));
 
         String lat = String.valueOf(addresses[0].getLatitude());
         String lon = String.valueOf(addresses[0].getLongitude());
 
         try {
+            // Webserviceaufruf-Vorbereitungen
             HttpTransport httpTransport = new NetHttpTransport();
             HttpRequestFactory requestFactory = httpTransport.createRequestFactory();
-/*
-            Eigener Webserviceaufruf durch Nutzung von Geocoder nicht mehr notwendig
- */
-//            GenericUrl coordUrl =
-//                    new GenericUrl("http://nominatim.openstreetmap.org/search");
-//            coordUrl.put("format", "json");
-//            coordUrl.put("q", query);
-//
-//            HttpRequest coordRequest = requestFactory.buildGetRequest(coordUrl);
-//            HttpResponse coordResponse = coordRequest.execute();
-//
-//            String coordOutput = coordResponse.parseAsString();
-//
-//            JSONArray coordWholeArray = new JSONArray(coordOutput);
-//            JSONObject coordFirstObject = (JSONObject) coordWholeArray.get(0);
-//
-//            String lat = saveStringRead(coordFirstObject, "lat");
-//            String lon = saveStringRead(coordFirstObject, "lon");
 
-            // Now use the coordinates to address the opencharge webservice
+            // Baue URL auf
             GenericUrl chargeUrl =
                     new GenericUrl("http://api.openchargemap.io/v2/poi");
             chargeUrl.put("output", "json");
@@ -86,21 +84,25 @@ public class SearchAsync extends AsyncTask<Address, Integer, ArrayList<OpenCharg
 
             HttpRequest chargeRequest = requestFactory.buildGetRequest(chargeUrl);
 
+            // Setze Header fuer UTF-8-Kodierung
             chargeRequest.setResponseHeaders(chargeRequest.getResponseHeaders().
                     setContentType("application/json; charset=utf-8").
                     setContentEncoding("UTF-8"));
 
             HttpResponse chargeResponse = chargeRequest.execute();
 
+            // Dekomprimiere gzip-Ergebnisdaten fuer UTF-8-Darstellung
             String chargeOutput = decompress(chargeResponse.getContent());
 
+            // Speichere gefundene Ladestationen in JSON-Array
             JSONArray chargeWholeArray = new JSONArray(chargeOutput);
-            ArrayList<OpenChargePoint> points = new ArrayList<OpenChargePoint>();
 
+            // Erzeuge leere Liste von Ladestationen, die im folgenden befuellt wird
+            ArrayList<OpenChargePoint> points = new ArrayList<>();
+
+            // Verarbeite JSON-Ladestationen zu Objekten
             for (int i = 0; i < chargeWholeArray.length(); i++) {
                 JSONObject o = chargeWholeArray.getJSONObject(i);
-
-                // Convert JSONObject to OpenChargePoint-Object
 
                 OpenChargePoint p = new OpenChargePoint();
                 p.setTitle(saveStringRead(o, "OperatorsReference"));
@@ -108,9 +110,9 @@ public class SearchAsync extends AsyncTask<Address, Integer, ArrayList<OpenCharg
                 p.setOperational(saveBooleanRead(o.getJSONObject("StatusType"), "IsOperational"));
                 p.setDateLastStatusUpdate(DateTime.parseRfc3339(saveStringRead(o, "DateLastStatusUpdate")));
 
-                // Connections
+                // Verarbeite Verbindungen
                 JSONArray connectionWholeArray = o.getJSONArray("Connections");
-                ArrayList<ChargeConnection> connections = new ArrayList<ChargeConnection>();
+                ArrayList<ChargeConnection> connections = new ArrayList<>();
                 for (int j = 0; j < connectionWholeArray.length(); j++) {
 
                     ChargeConnection con = new ChargeConnection();
@@ -126,11 +128,11 @@ public class SearchAsync extends AsyncTask<Address, Integer, ArrayList<OpenCharg
                     con.setVoltage(saveDoubleRead(jsonCon, "Voltage"));
                     con.setPowerKW(saveDoubleRead(jsonCon, "PowerKW"));
 
-                    // Hinzufügen zur Connection-Liste die am Ende dem OpenChargePoint übergeben wird
+                    // Hinzufuegen zur Connection-Liste die am Ende dem OpenChargePoint uebergeben wird
                     connections.add(con);
 
-                    con = null; // Destroy con
-                    jsonCon = null; // Destroy jsonCon
+                    con = null;
+                    jsonCon = null;
                 }
 
                 p.setConnections(connections);
@@ -153,12 +155,12 @@ public class SearchAsync extends AsyncTask<Address, Integer, ArrayList<OpenCharg
                 p.setLongitude(saveDoubleRead(a, "Longitude"));
                 p.setDistance(saveDoubleRead(a, "Distance"));
 
-                // OpenChargePoint zu ArrayList hinzufügen, um diese später in onPostExecute an die UI
-                // zu übergeben
+                // OpenChargePoint zu ArrayList hinzufuegen, um diese spaeter in onPostExecute an die UI
+                // zu uebergeben
                 points.add(p);
 
-                p = null; // Destroy p
-                a = null; // Destroy address information
+                p = null;
+                a = null;
             }
 
             return points;
@@ -178,14 +180,60 @@ public class SearchAsync extends AsyncTask<Address, Integer, ArrayList<OpenCharg
         }
     }
 
+    /**
+     * Zeige beschaeftigt-Meldung
+     * @param step Anzuzeigende Nachricht
+     */
+    @Override
+    protected void onProgressUpdate(String[] step) {
+        progDialog = new ProgressDialog(callback.getContext());
+        progDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+            @Override
+            public void onCancel(DialogInterface dialog) {
+                SearchAsync.this.cancel(true);
+            }
+        });
+        progDialog.setMessage(step[0]);
+        progDialog.setIndeterminate(true);
+        progDialog.setCancelable(true);
+        progDialog.setCanceledOnTouchOutside(false);
+        progDialog.show();
+    }
+
+    /**
+     * Schliesse beschaeftigt-Meldung bei Abbruch durch Benutzer
+     */
+    @Override
+    protected void onCancelled() {
+        if (progDialog != null && progDialog.isShowing()) {
+            progDialog.dismiss();
+        }
+
+        Toast.makeText(callback.getContext(),R.string.searchCancelled, Toast.LENGTH_SHORT).show();
+    }
+
+    /**
+     * Schliesse beschaeftigt-Meldung und uebergebe Ergebnisse der Hintergrundverarbeitung an UI-Thread
+     * @param results Gefundene Ladestationen
+     */
     @Override
     protected void onPostExecute(ArrayList<OpenChargePoint> results) {
-        // OpenChargePoints an UI übergeben
+        // Schliesse beschaeftigt-Meldung
+        if (progDialog != null && progDialog.isShowing()) {
+            progDialog.dismiss();
+        }
+
+        // OpenChargePoints an UI uebergeben
         if (results != null) {
             callback.updateListView(results);
         }
     }
 
+    /**
+     * Extraktion von Zeichen aus komprimiertem gzip-Format in UTF-8-Zeichensatz
+     * @param is Gzip-Zeichen als Stream
+     * @return Unkomprimierte Zeichen
+     */
     private String decompress(InputStream is) {
         try {
             BufferedReader bf = new BufferedReader(new InputStreamReader(is, "UTF-8"));
@@ -201,7 +249,7 @@ public class SearchAsync extends AsyncTask<Address, Integer, ArrayList<OpenCharg
         return "";
     }
 
-    //---------------------Private Methoden für Exception-sicheres JSON-Parsing-------
+    //---------------------Private Methoden fuer Exception-sicheres JSON-Parsing-------
 
     private String saveStringRead(JSONObject origin, String param) {
         try {

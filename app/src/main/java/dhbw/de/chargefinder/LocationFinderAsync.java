@@ -1,30 +1,22 @@
 package dhbw.de.chargefinder;
 
-import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.res.Resources;
-import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.location.LocationProvider;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.widget.Toast;
 
-import com.google.api.client.util.DateTime;
-
 import java.util.Calendar;
-import java.util.Date;
-import java.util.Timer;
 
 /**
- * Created by Marco on 02.06.2015.
+ * Asynchroner Task zum Erhalt von Positionsdaten aus Suchbegriff
  */
-public class LocationFinderAsync extends AsyncTask<Void, Void, Location> {
+public class LocationFinderAsync extends AsyncTask<Void, String, Location> {
 
     Location location; // location
     ProgressDialog progDialog;
@@ -33,14 +25,21 @@ public class LocationFinderAsync extends AsyncTask<Void, Void, Location> {
     MyLocationListener listener;
     Resources res;
 
+    /**
+     * Callback Interface
+     */
     public interface LocationFinderAsyncListener {
-        public void receiveLocation(double lat, double lon);
-
-        public Context getContext();
+        void receiveLocation(double lat, double lon);
+        Context getContext();
     }
 
     private LocationFinderAsyncListener callback;
 
+    /**
+     * Konstruktor
+     *
+     * @param callback Activity-Klasse
+     */
     public LocationFinderAsync(LocationFinderAsyncListener callback) {
         this.callback = callback;
         this.locationProvider = null;
@@ -52,6 +51,12 @@ public class LocationFinderAsync extends AsyncTask<Void, Void, Location> {
         res = callback.getContext().getResources();
     }
 
+    /**
+     * Konstruktor mit vordefinierter Geodaten-Quelle
+     *
+     * @param callback         Activity-Klasse
+     * @param locationProvider Geodaten-Quelle
+     */
     public LocationFinderAsync(LocationFinderAsyncListener callback, String locationProvider) {
 
         this.callback = callback;
@@ -64,23 +69,26 @@ public class LocationFinderAsync extends AsyncTask<Void, Void, Location> {
         res = callback.getContext().getResources();
     }
 
+    /**
+     * Auswahl der Geodaten-Quelle vor eigentlicher Hintergrundverarbeitung
+     */
     @Override
     protected void onPreExecute() {
-        // Get the location manager
-
+        // Location Manager erhalten
         locationManager =
                 (LocationManager) callback.getContext().
                         getSystemService(callback.getContext().LOCATION_SERVICE);
 
         listener = new MyLocationListener();
-        String locationProviderName = "";
-
 
         if (locationProvider == null) {
+            // Falls keine Quelle vordefiniert ist, ermittle sie
+
 //            String locationProvider = locationManager.getBestProvider(new Criteria(), true);
             boolean gpsEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
             boolean networkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
-//
+
+            // Falls GPS aktiviert ist, nutze das. Andernfalls nutze das Internet
             if (gpsEnabled) {
                 locationProvider = LocationManager.GPS_PROVIDER;
             } else if (networkEnabled) {
@@ -90,12 +98,13 @@ public class LocationFinderAsync extends AsyncTask<Void, Void, Location> {
                 Location lastNetworkLocation = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
                 Location lastGpsLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
 
+                // Falls kein letzter bekannter Standort verfuegbar, Abbruch
                 if (lastNetworkLocation == null && lastGpsLocation == null) {
-                    //TODO kein Standort verfügbar, User benachrichtigen
                     this.cancel(true);
                     return;
                 }
 
+                // Nutze letzten bekannten Standort
                 if (lastNetworkLocation == null && lastGpsLocation != null) {
                     location = lastGpsLocation;
                 } else if (lastNetworkLocation != null && lastGpsLocation == null) {
@@ -109,8 +118,63 @@ public class LocationFinderAsync extends AsyncTask<Void, Void, Location> {
                 }
             }
         }
+        // Abboniere Geodaten-Informationen
         locationManager.requestLocationUpdates(locationProvider, 0, 0, listener);
 
+        // Zeige beschaeftigt-Meldung
+        publishProgress();
+    }
+
+    /**
+     * Schliesse beschaeftigt-Meldung bei Abbruch durch Benutzer
+     */
+    @Override
+    protected void onCancelled() {
+        if (progDialog != null && progDialog.isShowing()) {
+            progDialog.dismiss();
+        }
+
+
+        Toast.makeText(callback.getContext(), R.string.noPositionResults, Toast.LENGTH_SHORT).show();
+        locationManager.removeUpdates(listener);
+    }
+
+    /**
+     * Asynchrone Hintergrundverarbeitung: Ermittelt aktuellen Standort
+     * @param params Ungenutzt
+     * @return Ermittelter Standort
+     */
+    @Override
+    protected Location doInBackground(Void[] params) {
+        // Bestimme aktuelle Uhrzeit fuer Timeout-Rechnung
+        long timeBefore = Calendar.getInstance().getTime().getTime();
+
+        // Definiere Timeout fuer Standortsuche (in ms)
+        long maxTime = timeBefore + 30 * 1000;
+
+        // Solange kein Standort gefunden wurde und Timeout nicht erreicht, warte auf Standort
+        while (this.location == null && Calendar.getInstance().getTime().getTime() < maxTime) {
+            //Warte
+        }
+
+        if (location == null) {
+            // Falls kein Standort gefunden wurde (also Timeout erreicht), versuche letzten
+            // bekannten Standort zu finden
+            Location location = locationManager.getLastKnownLocation(locationProvider);
+            locationManager.removeUpdates(listener);
+        }
+        return location;
+    }
+
+    /**
+     * Zeige beschaeftigt-Meldung
+     * @param step Anzuzeigende Nachricht
+     */
+    @Override
+    protected void onProgressUpdate(String[] step) {
+        String locationProviderName;
+
+        // Setze Name der Geodaten-Quelle fuer beschaeftigt-Nachricht
         switch (locationProvider) {
             case LocationManager.GPS_PROVIDER:
                 locationProviderName = res.getString(R.string.geoSource_gps);
@@ -141,47 +205,27 @@ public class LocationFinderAsync extends AsyncTask<Void, Void, Location> {
         progDialog.show();
     }
 
-    @Override
-    protected void onCancelled() {
-        if (progDialog != null && progDialog.isShowing()) {
-            progDialog.dismiss();
-        }
-
-
-        Toast.makeText(callback.getContext(), res.getString(R.string.geoNoResult), Toast.LENGTH_SHORT).show();
-        locationManager.removeUpdates(listener);
-    }
-
-    @Override
-    protected Location doInBackground(Void[] params) {
-        long timeBefore = Calendar.getInstance().getTime().getTime();
-        long maxTime = timeBefore + 3 * 10000; // Für Such-Timeout
-        while (this.location == null && Calendar.getInstance().getTime().getTime() < maxTime) {
-            //Warte
-        }
-//        return location;
-        if (location == null) {
-            Location location = locationManager.getLastKnownLocation(locationProvider);
-            locationManager.removeUpdates(listener);
-        }
-        return location;
-    }
-
+    /**
+     * Schliesse beschaeftigt-Meldung und uebergebe Ergebnisse der Hintergrundverarbeitung an UI-Thread
+     * @param result Standort
+     */
     @Override
     protected void onPostExecute(Location result) {
+        // Schliesse beschaeftigt-Meldung
         if (progDialog != null && progDialog.isShowing()) {
             progDialog.dismiss();
         }
 
         if (result != null) {
+            // Gebe Laengen- und Breitengrad des ermittelten Standorts an UI-Thread zurueck
             callback.receiveLocation(result.getLatitude(), result.getLongitude());
         } else {
-            Toast.makeText(callback.getContext(), res.getString(R.string.geoNoResult), Toast.LENGTH_SHORT).show();
+            Toast.makeText(callback.getContext(), R.string.noPositionResults, Toast.LENGTH_SHORT).show();
         }
     }
 
-    /*
-         LocationListener-Methods
+    /**
+     * Methoden fuer Geodaten-Listener
      */
     public class MyLocationListener implements LocationListener {
         @Override
@@ -191,17 +235,12 @@ public class LocationFinderAsync extends AsyncTask<Void, Void, Location> {
 
         @Override
         public void onStatusChanged(String provider, int status, Bundle extras) {
-
         }
-
         @Override
         public void onProviderEnabled(String provider) {
-
         }
-
         @Override
         public void onProviderDisabled(String provider) {
-
         }
     }
 }

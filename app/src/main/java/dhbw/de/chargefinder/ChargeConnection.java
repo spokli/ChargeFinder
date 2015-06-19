@@ -1,7 +1,7 @@
 package dhbw.de.chargefinder;
 
 /**
- * Created by Marco on 30.05.2015.
+ * Repraesentiert eine Verbindung einer Ladestation
  */
 public class ChargeConnection {
 

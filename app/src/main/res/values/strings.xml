@@ -2,14 +2,24 @@
     <string name="app_name">"ChargeFinder"</string>
     <string name="action_settings">"Einstellungen"</string>
     <string name="search">"Suche…"</string>
-    <string name="geoSource">"Geo-Source wählen…"</string>
+    <string name="getCoordinatesFromSearch">"Ermittle Koordinaten aus Sucheingabe..."</string>
     <string name="ja">"Ja"</string>
     <string name="nein">"Nein"</string>
+    <string name="cancel">"Abbrechen"</string>
     <string name="geoAktivieren">"Ihr GPS ist deaktiviert. Möchten Sie es aktivieren?"</string>
+    <string name="netzwerkAktivieren">"Ihre Netzwerkverbindung ist deaktiviert. Möchten Sie sie aktivieren?"</string>
+    <string name="geoSource">"Geo-Quelle wählen…"</string>
+    <string name="netSource">"Netzwek-Quelle wählen…"</string>
     <string name="geoSource_gps">"GPS"</string>
     <string name="geoSource_net">"Netzwerk"</string>
     <string name="geoSource_pas">"Passiv"</string>
+    <string name="netSource_roaming">"Mobile Daten"</string>
+    <string name="netSource_wifi">"WLAN"</string>
     <string name="geoSearch1">"Suche Standort durch "</string>
     <string name="geoSearch2">"-Verbindung…"</string>
     <string name="geoNoResult">"Kein Standort gefunden."</string>
+    <string name="searchCancelled">"Suche durch Benutzer abgebrochen."</string>
+    <string name="noSearchResults">"Keine Suchergebnisse."</string>
+    <string name="noPositionResults">"Kein Standort gefunden."</string>
+    <string name="searching">"Suche..."</string>
 </resources>
