@@ -14,10 +14,13 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.view.KeyEvent;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
+import android.widget.ShareActionProvider;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -30,12 +33,14 @@ import java.util.Locale;
 public class MainActivity extends Activity implements SearchAsync.SearchAsyncListener,
         GeocoderAsync.GeocoderAsyncListener, LocationFinderAsync.LocationFinderAsyncListener {
 
+    public static final String CHARGE_POINT_ID = "ChargePointId";
     protected EditText _editText_search = null;
     protected ImageButton _btn_search = null;
     protected ImageButton _btn_searchSettings = null;
     protected ImageButton _btn_searchPosition = null;
     protected ListView _listView_searchResults = null;
     private Resources _res = null;
+    private ShareActionProvider mShareActionProvider = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -187,6 +192,20 @@ public class MainActivity extends Activity implements SearchAsync.SearchAsyncLis
         _listView_searchResults.setAdapter(arrayAdapter);
         // Fokus auf Liste setzen, damit Cursor nicht mehr in Suchfeld ist
         _listView_searchResults.requestFocus();
+
+        _listView_searchResults.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent intent = new Intent(view.getContext(), SingleItemActivity.class);
+
+
+                //intent.putExtra(CHARGE_POINT_ID, );
+                startActivity(intent);
+                //Toast.makeText(getApplicationContext(), ((TextView) view).getText(), Toast.LENGTH_SHORT).show();
+
+            }
+        });
+
     }
 
     /**
