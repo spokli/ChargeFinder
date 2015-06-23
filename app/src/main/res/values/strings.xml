@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">"ChargeFinder"</string>
     <string name="action_settings">"Einstellungen"</string>
+    <string name="action_share">"Teilen"</string>
     <string name="search">"Suche…"</string>
     <string name="getCoordinatesFromSearch">"Ermittle Koordinaten aus Sucheingabe..."</string>
     <string name="ja">"Ja"</string>
@@ -22,4 +23,7 @@
     <string name="noSearchResults">"Keine Suchergebnisse."</string>
     <string name="noPositionResults">"Kein Standort gefunden."</string>
     <string name="searching">"Suche..."</string>
+    <string name="title_activity_single_item">SingleItemActivity</string>
+
+    <string name="hello_world">Hello world!</string>
 </resources>
