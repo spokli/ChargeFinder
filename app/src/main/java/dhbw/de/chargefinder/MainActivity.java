@@ -14,6 +14,7 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.view.KeyEvent;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -36,6 +37,7 @@ public class MainActivity extends Activity implements SearchAsync.SearchAsyncLis
     protected ImageButton _btn_searchPosition = null;
     protected ListView _listView_searchResults = null;
     private Resources _res = null;
+    private ArrayList<OpenChargePoint> points = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -187,6 +189,9 @@ public class MainActivity extends Activity implements SearchAsync.SearchAsyncLis
         _listView_searchResults.setAdapter(arrayAdapter);
         // Fokus auf Liste setzen, damit Cursor nicht mehr in Suchfeld ist
         _listView_searchResults.requestFocus();
+
+        // Übergebe OpenChargePoints an Activity-Klasse
+        this.points = points;
     }
 
     /**
