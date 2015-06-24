@@ -1,9 +1,11 @@
 package dhbw.de.chargefinder;
 
+import java.io.Serializable;
+
 /**
  * Repraesentiert eine Verbindung einer Ladestation
  */
-public class ChargeConnection {
+public class ChargeConnection implements Serializable {
 
     private int id;             // Filterable
     private String title;

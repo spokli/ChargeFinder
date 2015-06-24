@@ -20,7 +20,6 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.ShareActionProvider;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -33,7 +32,7 @@ import java.util.Locale;
 public class MainActivity extends Activity implements SearchAsync.SearchAsyncListener,
         GeocoderAsync.GeocoderAsyncListener, LocationFinderAsync.LocationFinderAsyncListener {
 
-    public static final String CHARGE_POINT_ID = "ChargePointId";
+    public static final String CHARGE_POINT = "ChargePoint";
     protected EditText _editText_search = null;
     protected ImageButton _btn_search = null;
     protected ImageButton _btn_searchSettings = null;
@@ -194,18 +193,19 @@ public class MainActivity extends Activity implements SearchAsync.SearchAsyncLis
         // Fokus auf Liste setzen, damit Cursor nicht mehr in Suchfeld ist
         _listView_searchResults.requestFocus();
 
-        // Übergebe OpenChargePoints an Activity-Klasse
+        // Uebergebe OpenChargePoints an Activity-Klasse
         this.points = points;
 
+        //Beim Klick auf ein einzelnes Item in der Liste wird die SingleItemActivity aufgerufen
+        // und diese erhält den geklickten ChargePoint als Payload mitgeliefert
         _listView_searchResults.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent intent = new Intent(view.getContext(), SingleItemActivity.class);
 
-
-                //intent.putExtra(CHARGE_POINT_ID, );
+                OpenChargePoint clickedPoint = MainActivity.this.points.get(position);
+                intent.putExtra(CHARGE_POINT, clickedPoint);
                 startActivity(intent);
-                //Toast.makeText(getApplicationContext(), ((TextView) view).getText(), Toast.LENGTH_SHORT).show();
 
             }
         });

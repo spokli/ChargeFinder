@@ -3,13 +3,14 @@ package dhbw.de.chargefinder;
 
 import com.google.api.client.util.DateTime;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
  * Repraesentiert eine Ladestation
  * Created by Marco on 30.05.2015.
  */
-public class OpenChargePoint {
+public class OpenChargePoint implements Serializable {
 
     private int openChargeId;
     private String title; // operatorsReference in JSON
@@ -38,7 +39,7 @@ public class OpenChargePoint {
     private double distance;        // Filterable
 
     public String toString(){
-        return this.getTitle() + " | " + ("" + this.getDistance()).substring(0,4) + " km entfernt";
+        return this.getOpenChargeId() + " | " + this.getTitle() + " | " + ("" + this.getDistance()).substring(0,4) + " km entfernt";
     }
 
     //----------------------------------Getter & Setter---------------------------------
