@@ -165,8 +165,6 @@ public class MainActivity extends Activity implements SearchAsync.SearchAsyncLis
     @Override
     public void receiveAddresses(List<Address> addresses) {
 
-        // TODO: "Meinten Sie..." einbauen. Momentan wird nur die erste Addresse genutzt
-
         if (addresses.size() != 0) {
             // Fuehre Suche nach Ladestationen bei Adresse aus
             new SearchAsync(this).

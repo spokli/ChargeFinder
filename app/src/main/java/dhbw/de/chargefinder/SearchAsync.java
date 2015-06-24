@@ -105,6 +105,7 @@ public class SearchAsync extends AsyncTask<Address, String, ArrayList<OpenCharge
                 JSONObject o = chargeWholeArray.getJSONObject(i);
 
                 OpenChargePoint p = new OpenChargePoint();
+                p.setOpenChargeId(saveIntRead(o, "ID"));
                 p.setTitle(saveStringRead(o, "OperatorsReference"));
                 p.setOperatorTitle(saveStringRead(o.getJSONObject("OperatorInfo"), "Title"));
                 p.setOperational(saveBooleanRead(o.getJSONObject("StatusType"), "IsOperational"));
