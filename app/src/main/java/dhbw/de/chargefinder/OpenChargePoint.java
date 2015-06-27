@@ -39,7 +39,7 @@ public class OpenChargePoint implements Serializable {
     private double distance;        // Filterable
 
     public String toString(){
-        return this.getOpenChargeId() + " | " + this.getTitle() + " | " + ("" + this.getDistance()).substring(0,4) + " km entfernt";
+        return this.getTitle() + " | " + ("" + this.getDistance()).substring(0,4) + " km entfernt";
     }
 
     //----------------------------------Getter & Setter---------------------------------

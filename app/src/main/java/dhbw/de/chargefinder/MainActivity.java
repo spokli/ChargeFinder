@@ -195,7 +195,7 @@ public class MainActivity extends Activity implements SearchAsync.SearchAsyncLis
         this.points = points;
 
         //Beim Klick auf ein einzelnes Item in der Liste wird die SingleItemActivity aufgerufen
-        // und diese erhält den geklickten ChargePoint als Payload mitgeliefert
+        // und diese erhaelt den geklickten ChargePoint als Payload mitgeliefert
         _listView_searchResults.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {

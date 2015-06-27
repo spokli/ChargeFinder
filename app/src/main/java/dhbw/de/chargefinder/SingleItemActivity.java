@@ -32,7 +32,7 @@ public class SingleItemActivity extends Activity {
         _btn_Navigation = (Button) findViewById(R.id.btn_Navigation);
         _btn_Share = (Button) findViewById(R.id.btn_share);
 
-        //Hole den Parameter, der von der MainActivity mit übergeben wurde
+        //Hole den Parameter, der von der MainActivity mit uebergeben wurde
         Intent intent = getIntent();
         Bundle bundle = intent.getExtras();
         final OpenChargePoint openChargePoint = (OpenChargePoint) bundle.getSerializable(MainActivity.CHARGE_POINT);
@@ -83,10 +83,7 @@ public class SingleItemActivity extends Activity {
 
         int id = item.getItemId();
 
-        if (id == R.id.action_settings) {
-            return true;
-        }
+        return id == R.id.action_settings || super.onOptionsItemSelected(item);
 
-        return super.onOptionsItemSelected(item);
     }
 }
