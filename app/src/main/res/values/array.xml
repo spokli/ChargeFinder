@@ -1,0 +1,251 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string-array name="operators">
+        <item></item>
+        <item>(Unknown Operator)</item>
+        <item>Elektrobay (UK)</item>
+        <item>POD Point (UK)</item>
+        <item></item>
+        <item>ChargePoint (Coulomb Technologies)</item>
+        <item>Nissan US Dealer Network</item>
+        <item>Nissan UK Dealer Network</item>
+        <item>Chargemaster</item>
+        <item>Blink Network/ECOtality</item>
+        <item></item>
+        <item>EVSE LLC WebNet</item>
+        <item>RechargeAccess</item>
+        <item>Rideshare Online</item>
+        <item>Shorepower</item>
+        <item>eVgo Network</item>
+        <item>Elektromotive (UK)</item>
+        <item></item>
+        <item>Cambridgeshire Travel for Work</item>
+        <item>Zero Carbon World</item>
+        <item>Charge Your Car</item>
+        <item>Mobie.pt</item>
+        <item>ESB Ecars</item>
+        <item>Tesla Motors (Worldwide)</item>
+        <item>Ecotricity</item>
+        <item>Source London</item>
+        <item>AeroVironment</item>
+        <item></item>
+        <item>ChargeNet</item>
+        <item>e-Laad</item>
+        <item></item>
+        <item>Clipper Creek</item>
+        <item>POLAR (UK)</item>
+        <item>Green Motion (UK)</item>
+        <item>Westar Energy ElectroGo</item>
+        <item>ThePluginCompany (Belgium)</item>
+        <item>Blue Corner (Belgium)</item>
+        <item></item>
+        <item>Lidl</item>
+        <item>SemaCharge Network</item>
+        <item>OpConnect Network</item>
+        <item>MAGNE Charge</item>
+        <item>EATON</item>
+        <item>AVCON</item>
+        <item>(Private Residence/Individual)</item>
+        <item>(Business Owner at Location)</item>
+        <item>E.ON (Germany)</item>
+        <item>The New Motion (NL)</item>
+        <item>RWE Mobility/Essent</item>
+        <item>EV-Point</item>
+        <item>Volta Charging</item>
+        <item>Sun Country Highway</item>
+        <item>Enovos</item>
+        <item>Autolib (Paris)</item>
+        <item>ZE-MO (Be)</item>
+        <item>e-totem</item>
+        <item>Auto Bleue</item>
+        <item>The REV Project (UWA - Australia)</item>
+        <item></item>
+        <item>GreenLots</item>
+        <item>Source East (UK)</item>
+        <item>Vitaemobility</item>
+        <item>KiWhi Pass</item>
+        <item>Greenflux</item>
+        <item>Ultra-Fast</item>
+        <item>UWAG</item>
+        <item>Drehstromnetz</item>
+        <item>ElectroDrive</item>
+        <item>Empora</item>
+        <item>ladenetz.de</item>
+        <item>RCN (Rapid Charge Network)</item>
+        <item>Plugged In Midlands (UK)</item>
+        <item>RheinEnergie AG</item>
+        <item>EV-Box</item>
+        <item>FastNed</item>
+        <item>BELECTRIC Drive</item>
+        <item>ELMO</item>
+        <item>Ecoplug</item>
+        <item>Essent (NL)</item>
+        <item>Mobib (Belgium) </item>
+        <item>Enel (Italy)</item>
+        <item>Silfi (Italy)</item>
+        <item>E-moving (Italy)</item>
+        <item>Ecospazio (Italy)</item>
+        <item>Green Land Mobility (Italy)</item>
+        <item>FORTISIS</item>
+        <item>EnBW (D)</item>
+        <item>EVbility (Italy)</item>
+        <item>Greenway (sk)</item>
+        <item>RéseauVER / VERnetwork</item>
+        <item>Circuit Electrique</item>
+        <item>IBIL (Es)</item>
+        <item>MobecPoint (Es)</item>
+        <item>E-Car </item>
+        <item>BeCharged</item>
+        <item>Helsingin Energia</item>
+        <item>ChargeLounge</item>
+        <item>Park &amp; Charge (CH)</item>
+        <item>Park &amp; Charge (D)</item>
+        <item>Vlotte</item>
+        <item>ZenCar</item>
+        <item>BELECTRIC Drive</item>
+        <item>Orka Náttúrunnar</item>
+        <item>Allego BV</item>
+        <item>RWE / Npower</item>
+        <item>RWE eMobility</item>
+        <item>Ladefoxx</item>
+        <item>OpConnect</item>
+        <item>Vattenfall</item>
+        <item>EWR gmbh e-mobile</item>
+        <item>EVite (ch)</item>
+        <item>Hong Kong EV Power</item>
+        <item>MisterGreen, The Fast Charger Network</item>
+        <item>Sähköinenliikenne (fi)</item>
+        <item>Power Station</item>
+        <item>ČEZ</item>
+        <item>G2mobility</item>
+        <item></item>
+        <item>Source West</item>
+        <item>Plug-In North Central Washington</item>
+        <item>JuicePoint</item>
+        <item>EnerCity</item>
+        <item>Harz Energie</item>
+        <item>Stadtwerke Lübeck</item>
+        <item>Osterholzer Stadtwerke</item>
+        <item>SWB / EWE</item>
+        <item>VR Schneller-Strom-tanken</item>
+        <item>EWE</item>
+        <item>LSW Energie</item>
+        <item>BS Energie</item>
+        <item>Stadtwerke Wernigerode</item>
+        <item>Stadtwerke Northeim  SWN</item>
+        <item>Stadtwerke Göttingen</item>
+        <item>Rauman Energia</item>
+        <item>Stadtwerke Verden</item>
+        <item>Manx Electricity Authority</item>
+        <item>VIRTA.</item>
+        <item>EVS Energieversorgung Sylt </item>
+        <item>SUN Stadtwerke Union Nordhessen</item>
+        <item>Schleswiger Stadtwerke</item>
+        <item>EAM</item>
+        <item>ElectroDrive Salzburg</item>
+        <item>TANKE Wien Energie</item>
+        <item>Stadtwerke Rinteln</item>
+        <item>Versorgungsbetriebe Hann. Münden</item>
+        <item>EWI  Energiewerke Isernhagen</item>
+        <item>Stadtwerke Hameln</item>
+        <item>Stadtwerke Neumünster (SWN).</item>
+        <item>Stadtwerke Haldensleben  SWH</item>
+        <item>Stadtwerke Soest</item>
+        <item>Chargepoint Genie</item>
+        <item>Stadtwerke Grevesmühlen</item>
+        <item>Städtische Werke Magdeburg</item>
+        <item>Stadtwerke Strahlsund</item>
+        <item>Stadtwerke Rostock</item>
+        <item>Stadtwerke Leipzig SWL</item>
+        <item>The New Motion (DE)</item>
+        <item>The New Motion (BE)</item>
+        <item>Stadtwerke Dessau</item>
+        <item>Stadtwerke Wittenberg</item>
+        <item>StromTicket</item>
+        <item>Stadtwerke Halle</item>
+        <item> Stadtwerke Clausthal-Zellerfeld</item>
+        <item>GGEW</item>
+        <item>AEW</item>
+        <item>Mainova</item>
+        <item>Stadtwerke Wolfenbüttel</item>
+        <item>Nissan DE Freistrom</item>
+        <item></item>
+        <item>Stadtwerke Uetersen</item>
+        <item>Stadtwerke Elmshorn</item>
+        <item>EEW Duderstadt</item>
+        <item>ENEWA</item>
+        <item>ChargeNow</item>
+        <item>TOTAL Nl PlugToDrive </item>
+        <item>TOTAL Be PlugToDrive</item>
+        <item>ZEAG Energie</item>
+        <item>Nuon</item>
+        <item>EVnetNL</item>
+        <item>Ecotap</item>
+        <item>Alfen</item>
+        <item>eNovates</item>
+        <item>Latvenergo</item>
+        <item>Wirtschaftsbetriebe Stadt Nienburg</item>
+        <item>ElectroDrive/Mark-E (DE)</item>
+        <item>CLEVER </item>
+        <item>Azra Network</item>
+        <item>ELMŰ </item>
+        <item>OVAG Energie</item>
+        <item>E-Wald</item>
+        <item>PRE (cz)</item>
+        <item>inChaNet</item>
+        <item>E.ON (cz)</item>
+        <item>VSE</item>
+        <item>RAC Electric Highway/ChargeStar</item>
+
+    </string-array>
+
+    <string-array name="connections">
+        <item></item>
+        <item>Unknown</item>
+        <item>J1772</item>
+        <item>CHAdeMO</item>
+        <item>BS1363 3 Pin 13 Amp</item>
+        <item>Blue Commando (2P+E)</item>
+        <item>LP Inductive</item>
+        <item>SP Inductive</item>
+        <item>Avcon Connector</item>
+        <item>Tesla (Roadster)</item>
+        <item>NEMA 5-20R</item>
+        <item>NEMA 14-30</item>
+        <item>NEMA 14-50</item>
+        <item>Europlug 2-Pin (CEE 7/16)</item>
+        <item>NEMA 6-20</item>
+        <item>NEMA 6-15</item>
+        <item>CEE 3 Pin</item>
+        <item>CEE 5 Pin</item>
+        <item>CEE+ 7 Pin</item>
+        <item></item>
+        <item></item>
+        <item>XLR Plug (4 pin)</item>
+        <item>NEMA 5-15R</item>
+        <item>CEE 7/5</item>
+        <item>Wireless Charging</item>
+        <item>Mennekes (Type 2)</item>
+        <item>SCAME-Schnieder-Legrand (Type 3)</item>
+        <item>Tesla Supercharger</item>
+        <item>CEE 7/4 - Schuko - Type F</item>
+        <item>Type I (AS 3112)</item>
+        <item>Tesla (Model S onwards)</item>
+        <item>Tesla Battery Swap</item>
+        <item>SAE Combo (DC Fast Charge J1772)</item>
+        <item>CCS (Type 2 Version of Combined Coupler)</item>
+        <item>IEC 60309 3-pin</item>
+        <item>IEC 60309 5-pin</item>
+
+    </string-array>
+
+    <string-array name="levels">
+        <item></item>
+        <item>Level 1 : Low (Under 2kW)</item>
+        <item>Level 2 : Medium (Over 2kW)</item>
+        <item>Level 3:  High (Over 40kW)</item>
+
+    </string-array>
+
+</resources>

@@ -29,6 +29,14 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="dhbw.de.chargefinder.MainActivity" />
         </activity>
+        <activity
+            android:name=".SearchFilterActivity"
+            android:label="@string/title_activity_search_filter"
+            android:parentActivityName=".MainActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="dhbw.de.chargefinder.MainActivity" />
+        </activity>
     </application>
 
 </manifest>

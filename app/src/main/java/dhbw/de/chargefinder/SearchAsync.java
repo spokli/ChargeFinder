@@ -26,17 +26,19 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Asynchroner Task zum Erhalt von Positionsdaten aus Suchbegriff
  */
-public class SearchAsync extends AsyncTask<Address, String, ArrayList<OpenChargePoint>> {
+public class SearchAsync extends AsyncTask<Object, String, ArrayList<OpenChargePoint>> {
 
     /**
      * Callback Interface
      */
     public interface SearchAsyncListener {
         void updateListView(ArrayList<OpenChargePoint> points);
+
         Context getContext();
     }
 
@@ -46,6 +48,7 @@ public class SearchAsync extends AsyncTask<Address, String, ArrayList<OpenCharge
 
     /**
      * Konstruktor
+     *
      * @param callback Activity-Klasse
      */
     public SearchAsync(SearchAsyncListener callback) {
@@ -56,11 +59,15 @@ public class SearchAsync extends AsyncTask<Address, String, ArrayList<OpenCharge
 
     /**
      * Asynchrone Hintergrundverarbeitung: Sucht Ladestationen anhand von Koordinaten
-     * @param addresses Koordinaten, die Web-API uebergeben werden sollen
+     *
+     * @param input Koordinaten und Filter, die Web-API uebergeben werden sollen
      * @return Ermittelte Ladestationen in der Naehe
      */
     @Override
-    protected ArrayList<OpenChargePoint> doInBackground(Address[] addresses) {
+    protected ArrayList<OpenChargePoint> doInBackground(Object[] input) {
+
+        Address[] addresses = (Address[]) input[0];
+        HashMap<String, Object> settings = (HashMap<String, Object>) input[1];
 
         // Zeige beschaeftigt-Meldung
         publishProgress(res.getString(R.string.searching));
@@ -80,7 +87,9 @@ public class SearchAsync extends AsyncTask<Address, String, ArrayList<OpenCharge
             chargeUrl.put("distanceunit", "km");
             chargeUrl.put("latitude", lat);
             chargeUrl.put("longitude", lon);
-            chargeUrl.put("maxresults", "20");
+
+            // Lese Filter aus
+            applyFilters(chargeUrl, settings);
 
             HttpRequest chargeRequest = requestFactory.buildGetRequest(chargeUrl);
 
@@ -183,6 +192,7 @@ public class SearchAsync extends AsyncTask<Address, String, ArrayList<OpenCharge
 
     /**
      * Zeige beschaeftigt-Meldung
+     *
      * @param step Anzuzeigende Nachricht
      */
     @Override
@@ -210,11 +220,12 @@ public class SearchAsync extends AsyncTask<Address, String, ArrayList<OpenCharge
             progDialog.dismiss();
         }
 
-        Toast.makeText(callback.getContext(),R.string.searchCancelled, Toast.LENGTH_SHORT).show();
+        Toast.makeText(callback.getContext(), R.string.searchCancelled, Toast.LENGTH_SHORT).show();
     }
 
     /**
      * Schliesse beschaeftigt-Meldung und uebergebe Ergebnisse der Hintergrundverarbeitung an UI-Thread
+     *
      * @param results Gefundene Ladestationen
      */
     @Override
@@ -226,12 +237,17 @@ public class SearchAsync extends AsyncTask<Address, String, ArrayList<OpenCharge
 
         // OpenChargePoints an UI uebergeben
         if (results != null) {
-            callback.updateListView(results);
+            if (results.size() == 0) {
+                Toast.makeText(callback.getContext(), "Keine Ergebnisse gefunden", Toast.LENGTH_SHORT).show();
+            } else {
+                callback.updateListView(results);
+            }
         }
     }
 
     /**
      * Extraktion von Zeichen aus komprimiertem gzip-Format in UTF-8-Zeichensatz
+     *
      * @param is Gzip-Zeichen als Stream
      * @return Unkomprimierte Zeichen
      */
@@ -248,6 +264,25 @@ public class SearchAsync extends AsyncTask<Address, String, ArrayList<OpenCharge
             e.printStackTrace();
         }
         return "";
+    }
+
+    private void applyFilters(GenericUrl url, HashMap<String, Object> filters) {
+
+        if ((int) filters.get("operator") != 0)
+            url.put("operatorId", filters.get("operator"));
+
+        if ((int) filters.get("connection") != 0)
+            url.put("connectiontypeid", filters.get("connection"));
+
+        if ((int) filters.get("level") != 0)
+            url.put("levelid", filters.get("level"));
+
+        Double kw = (Double) filters.get("kw_from");
+        url.put("minpowerkw", kw);
+
+        Integer maxresults = (Integer) filters.get("maxresults");
+        if (maxresults > 0)
+            url.put("maxresults", maxresults);
     }
 
     //---------------------Private Methoden fuer Exception-sicheres JSON-Parsing-------

@@ -5,9 +5,10 @@
     <string name="start_navigation">"Navigation starten"</string>
     <string name="search">"Suche…"</string>
     <string name="getCoordinatesFromSearch">"Ermittle Koordinaten aus Sucheingabe..."</string>
-    <string name="ja">"Ja"</string>
-    <string name="nein">"Nein"</string>
+    <string name="yes">"Ja"</string>
+    <string name="no">"Nein"</string>
     <string name="cancel">"Abbrechen"</string>
+    <string name="save">"Speichern"</string>
     <string name="geoAktivieren">"Ihr GPS ist deaktiviert. Möchten Sie es aktivieren?"</string>
     <string name="netzwerkAktivieren">"Ihre Netzwerkverbindung ist deaktiviert. Möchten Sie sie aktivieren?"</string>
     <string name="geoSource">"Geo-Quelle wählen…"</string>
@@ -25,6 +26,19 @@
     <string name="noPositionResults">"Kein Standort gefunden."</string>
     <string name="searching">"Suche..."</string>
     <string name="title_activity_single_item">SingleItemActivity</string>
+    <string name="from">"von"</string>
+    <string name="to">"bis"</string>
 
     <string name="hello_world">Hello world!</string>
+    <string name="title_activity_search_filter">SearchFilterActivity</string>
+
+    <!--Hier die Texte für die OpenChargePoint-Attribute-->
+    <string name="operator">"Betreiber"</string>
+    <string name="distance">"Distanz"</string>
+    <string name="connection">"Verbindung"</string>
+    <string name="level">"Level"</string>
+    <string name="amp">"Stromstaerke"</string>
+    <string name="volt">"Spannung"</string>
+    <string name="kw">"KW"</string>
+    <string name="maxresults">"Max. Ergebnismenge"</string>
 </resources>

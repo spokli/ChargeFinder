@@ -20,9 +20,12 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.ShareActionProvider;
+import android.widget.Spinner;
+import android.widget.SpinnerAdapter;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
@@ -41,6 +44,7 @@ public class MainActivity extends Activity implements SearchAsync.SearchAsyncLis
     private Resources _res = null;
     private ShareActionProvider mShareActionProvider = null;
     private ArrayList<OpenChargePoint> points = null;
+    private HashMap<String, Object> settings = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,6 +75,42 @@ public class MainActivity extends Activity implements SearchAsync.SearchAsyncLis
                     }
                 }
                 return false;
+            }
+        });
+
+        // Setze Listener fuer Suchfilter-Button
+        _btn_searchSettings.setOnClickListener(new View.OnClickListener() {
+
+            View settingsView = null;
+
+            @Override
+            public void onClick(View v) {
+                settingsView = getLayoutInflater().inflate(R.layout.sample_search_filter_view, null);
+
+                // Fülle Settings-View
+                prefillSettings(settingsView);
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                builder.setTitle("Suchfilter")
+                        .setView(settingsView)
+                        .setCancelable(false)
+                        .setPositiveButton(getResources().getString(R.string.save), new DialogInterface.OnClickListener() {
+                            public void onClick(final DialogInterface dialog, final int id) {
+                                // Speichern
+                                SettingsViewReader settingsViewReader = new SettingsViewReader(settingsView);
+                                MainActivity.this.settings = settingsViewReader.getSettings();
+                                Toast.makeText(getContext(), "Filter gespeichert.", Toast.LENGTH_SHORT).show();
+                                // TODO: Dropdown-Boxen befüllen
+                            }
+                        })
+                        .setNegativeButton(getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() {
+                            public void onClick(final DialogInterface dialog, final int id) {
+                                // Abbrechen
+                                dialog.cancel();
+                            }
+                        });
+                AlertDialog d = builder.create();
+                d.show();
             }
         });
 
@@ -160,15 +200,18 @@ public class MainActivity extends Activity implements SearchAsync.SearchAsyncLis
 
     /**
      * Erhalte moegliche Adressen als Ergebnis von asynchronem Suchtask
+     *
      * @param addresses Gefundene Adressen aus Suchbegriff
      */
     @Override
     public void receiveAddresses(List<Address> addresses) {
 
         if (addresses.size() != 0) {
-            // Fuehre Suche nach Ladestationen bei Adresse aus
+            // Fuehre Suche nach Ladestationen bei Adresse mit Filtern aus
+            Object[] input = new Object[] {addresses.toArray(new Address[addresses.size()]),
+                                            settings};
             new SearchAsync(this).
-                    execute(addresses.toArray(new Address[addresses.size()]));
+                    execute(input);
         } else {
             Toast.makeText(getContext(), R.string.noSearchResults, Toast.LENGTH_SHORT).show();
         }
@@ -176,6 +219,7 @@ public class MainActivity extends Activity implements SearchAsync.SearchAsyncLis
 
     /**
      * Aktualisiere Ergebnisanzeige in UI mit OpenChargePoints aus asynchronem Suchtask
+     *
      * @param points Ladestationen, die angezeigt werden sollen
      */
     @Override
@@ -195,7 +239,7 @@ public class MainActivity extends Activity implements SearchAsync.SearchAsyncLis
         this.points = points;
 
         //Beim Klick auf ein einzelnes Item in der Liste wird die SingleItemActivity aufgerufen
-        // und diese erhält den geklickten ChargePoint als Payload mitgeliefert
+        // und diese erhaelt den geklickten ChargePoint als Payload mitgeliefert
         _listView_searchResults.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -212,6 +256,7 @@ public class MainActivity extends Activity implements SearchAsync.SearchAsyncLis
 
     /**
      * Erhalte Koordinaten aus asynchronem Geodaten-Task
+     *
      * @param lat Breitengrad
      * @param lon Laengengrad
      */
@@ -230,6 +275,7 @@ public class MainActivity extends Activity implements SearchAsync.SearchAsyncLis
 
     /**
      * Gibt aktuellen Context zurueck fuer korrekte Interface-Implementierung aus AsyncTask-Interfaces
+     *
      * @return aktueller Context
      */
     @Override
@@ -254,13 +300,13 @@ public class MainActivity extends Activity implements SearchAsync.SearchAsyncLis
             final AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
             builder.setMessage(getResources().getString(R.string.geoAktivieren))
                     .setCancelable(false)
-                    .setPositiveButton(getResources().getString(R.string.ja), new DialogInterface.OnClickListener() {
+                    .setPositiveButton(getResources().getString(R.string.yes), new DialogInterface.OnClickListener() {
                         public void onClick(final DialogInterface dialog, final int id) {
                             // Benutzer will aktivieren, zeige per Intent die Einstellungen an
                             startActivityForResult(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS), 1);
                         }
                     })
-                    .setNegativeButton(getResources().getString(R.string.nein), new DialogInterface.OnClickListener() {
+                    .setNegativeButton(getResources().getString(R.string.no), new DialogInterface.OnClickListener() {
                         public void onClick(final DialogInterface dialog, final int id) {
                             // Benutzer will nicht aktivieren, starte Positionsbestimmung trotzdem
                             dialog.cancel();
@@ -322,9 +368,10 @@ public class MainActivity extends Activity implements SearchAsync.SearchAsyncLis
 
     /**
      * Erhalte Bestaetigung, dass Einstellungsaktivitaeten geschlossen wurden
+     *
      * @param requestCode Aufrufcode des Intents
-     * @param resultCode Ergebniscode des Intents
-     * @param data Aufrufintent
+     * @param resultCode  Ergebniscode des Intents
+     * @param data        Aufrufintent
      */
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
@@ -340,5 +387,29 @@ public class MainActivity extends Activity implements SearchAsync.SearchAsyncLis
             default:
                 break;
         }
+    }
+
+    private void prefillSettings(View settingsView){
+        Spinner operator = (Spinner) settingsView.findViewById(R.id.operator);
+        Spinner level = (Spinner) settingsView.findViewById(R.id.level);
+        Spinner connection = (Spinner) settingsView.findViewById(R.id.connection);
+
+        String[] operatorArray = getContext().getResources().getStringArray(R.array.operators);
+        ArrayAdapter<String> operatorAdapter = new ArrayAdapter<String>(MainActivity.this,
+                android.R.layout.simple_spinner_item, operatorArray);
+        operator.setAdapter(operatorAdapter);
+
+        String[] connectionsArray = getContext().getResources().getStringArray(R.array.connections);
+        ArrayAdapter<String> connectionsAdapter = new ArrayAdapter<String>(MainActivity.this,
+                android.R.layout.simple_spinner_item, connectionsArray);
+        connection.setAdapter(connectionsAdapter);
+
+        String[] levelsArray = getContext().getResources().getStringArray(R.array.levels);
+        ArrayAdapter<String> levelsAdapter = new ArrayAdapter<String>(MainActivity.this,
+                android.R.layout.simple_spinner_item, levelsArray);
+        level.setAdapter(levelsAdapter);
+
+        EditText maxresults = (EditText) settingsView.findViewById(R.id.maxresults);
+        maxresults.setText("20");
     }
 }
