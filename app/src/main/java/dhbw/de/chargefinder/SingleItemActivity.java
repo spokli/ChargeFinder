@@ -37,9 +37,7 @@ public class SingleItemActivity extends Activity {
         Bundle bundle = intent.getExtras();
         final OpenChargePoint openChargePoint = (OpenChargePoint) bundle.getSerializable(MainActivity.CHARGE_POINT);
 
-        //ToDo Hier sollte noch uberlegt werden, was wir genau auf der Seite anzeigen
         _textView_Title.setText(openChargePoint.toString());
-
 
         //Beim Klick auf den Navigations-Button wird ein Intent erzeugt, dass mit den
         // Geokoordinaten bestueckt an die Methode startActivity uebergeben wird
@@ -69,21 +67,6 @@ public class SingleItemActivity extends Activity {
                 startActivity(Intent.createChooser(sharingIntent, "Share via"));
             }
         });
-
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_single_item, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-
-        int id = item.getItemId();
-
-        return id == R.id.action_settings || super.onOptionsItemSelected(item);
 
     }
 }

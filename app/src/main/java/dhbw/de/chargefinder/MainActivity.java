@@ -13,6 +13,9 @@ import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -389,6 +392,10 @@ public class MainActivity extends Activity implements SearchAsync.SearchAsyncLis
         }
     }
 
+    /**
+     * Lese Sucheinstellungen vor Suche aus
+     * @param settingsView View für Sucheinstellungen
+     */
     private void prefillSettings(View settingsView){
         Spinner operator = (Spinner) settingsView.findViewById(R.id.operator);
         Spinner level = (Spinner) settingsView.findViewById(R.id.level);
@@ -412,4 +419,24 @@ public class MainActivity extends Activity implements SearchAsync.SearchAsyncLis
         EditText maxresults = (EditText) settingsView.findViewById(R.id.maxresults);
         maxresults.setText("20");
     }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = this.getMenuInflater();
+        inflater.inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle item selection
+        switch (item.getItemId()) {
+            case R.id.menu_help:
+                Intent intent = new Intent(getContext(), HelpActivity.class);
+                startActivity(intent);
+                break;
+        }
+        return true;
+    }
 }
+

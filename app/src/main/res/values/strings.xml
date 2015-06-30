@@ -9,6 +9,7 @@
     <string name="no">"Nein"</string>
     <string name="cancel">"Abbrechen"</string>
     <string name="save">"Speichern"</string>
+    <string name="help">"Hilfe"</string>
     <string name="geoAktivieren">"Ihr GPS ist deaktiviert. Möchten Sie es aktivieren?"</string>
     <string name="netzwerkAktivieren">"Ihre Netzwerkverbindung ist deaktiviert. Möchten Sie sie aktivieren?"</string>
     <string name="geoSource">"Geo-Quelle wählen…"</string>
@@ -41,4 +42,6 @@
     <string name="volt">"Spannung"</string>
     <string name="kw">"KW"</string>
     <string name="maxresults">"Max. Ergebnismenge"</string>
+    <string name="title_activity_help">HelpActivity</string>
+
 </resources>
