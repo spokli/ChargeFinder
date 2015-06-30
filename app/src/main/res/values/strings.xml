@@ -29,6 +29,10 @@
     <string name="title_activity_single_item">SingleItemActivity</string>
     <string name="from">"von"</string>
     <string name="to">"bis"</string>
+    <string name="searchfilter">"Suchfilter"</string>
+    <string name="filter_saved">"Filter gespeichert"</string>
+    <string name="share_via">"Share via"</string>
+    <string name="share_msg">"Check out this awesome Charger, it's splendid!\n"</string>
 
     <string name="hello_world">Hello world!</string>
     <string name="title_activity_search_filter">SearchFilterActivity</string>

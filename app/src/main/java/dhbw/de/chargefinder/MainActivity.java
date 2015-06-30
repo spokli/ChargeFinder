@@ -24,7 +24,6 @@ import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.ShareActionProvider;
 import android.widget.Spinner;
-import android.widget.SpinnerAdapter;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -90,11 +89,11 @@ public class MainActivity extends Activity implements SearchAsync.SearchAsyncLis
             public void onClick(View v) {
                 settingsView = getLayoutInflater().inflate(R.layout.sample_search_filter_view, null);
 
-                // Fülle Settings-View
+                // Fuelle Settings-View
                 prefillSettings(settingsView);
 
                 AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-                builder.setTitle("Suchfilter")
+                builder.setTitle(R.string.searchfilter)
                         .setView(settingsView)
                         .setCancelable(false)
                         .setPositiveButton(getResources().getString(R.string.save), new DialogInterface.OnClickListener() {
@@ -102,8 +101,7 @@ public class MainActivity extends Activity implements SearchAsync.SearchAsyncLis
                                 // Speichern
                                 SettingsViewReader settingsViewReader = new SettingsViewReader(settingsView);
                                 MainActivity.this.settings = settingsViewReader.getSettings();
-                                Toast.makeText(getContext(), "Filter gespeichert.", Toast.LENGTH_SHORT).show();
-                                // TODO: Dropdown-Boxen befüllen
+                                Toast.makeText(getContext(), R.string.filter_saved, Toast.LENGTH_SHORT).show();
                             }
                         })
                         .setNegativeButton(getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() {

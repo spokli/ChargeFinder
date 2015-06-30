@@ -4,8 +4,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -61,10 +59,10 @@ public class SingleItemActivity extends Activity {
             public void onClick(View v) {
                 Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
                 sharingIntent.setType("text/plain");
-                String shareBody = "Check out this awesome Charger, it's splendid!\n"
+                String shareBody = SingleItemActivity.this.getResources().getString(R.string.share_msg)
                         + "http://openchargemap.org/site/poi/details/" + openChargePoint.getOpenChargeId();
                 sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, shareBody);
-                startActivity(Intent.createChooser(sharingIntent, "Share via"));
+                startActivity(Intent.createChooser(sharingIntent, SingleItemActivity.this.getResources().getString(R.string.share_via)));
             }
         });
 

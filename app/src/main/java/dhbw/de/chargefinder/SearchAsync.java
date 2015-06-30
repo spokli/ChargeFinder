@@ -87,9 +87,12 @@ public class SearchAsync extends AsyncTask<Object, String, ArrayList<OpenChargeP
             chargeUrl.put("distanceunit", "km");
             chargeUrl.put("latitude", lat);
             chargeUrl.put("longitude", lon);
+            chargeUrl.put("maxresults", 20);
 
             // Lese Filter aus
-            applyFilters(chargeUrl, settings);
+            if (settings != null) {
+                applyFilters(chargeUrl, settings);
+            }
 
             HttpRequest chargeRequest = requestFactory.buildGetRequest(chargeUrl);
 
@@ -140,9 +143,6 @@ public class SearchAsync extends AsyncTask<Object, String, ArrayList<OpenChargeP
 
                     // Hinzufuegen zur Connection-Liste die am Ende dem OpenChargePoint uebergeben wird
                     connections.add(con);
-
-                    con = null;
-                    jsonCon = null;
                 }
 
                 p.setConnections(connections);
@@ -168,9 +168,6 @@ public class SearchAsync extends AsyncTask<Object, String, ArrayList<OpenChargeP
                 // OpenChargePoint zu ArrayList hinzufuegen, um diese spaeter in onPostExecute an die UI
                 // zu uebergeben
                 points.add(p);
-
-                p = null;
-                a = null;
             }
 
             return points;
