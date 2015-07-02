@@ -35,7 +35,30 @@ public class SingleItemActivity extends Activity {
         Bundle bundle = intent.getExtras();
         final OpenChargePoint openChargePoint = (OpenChargePoint) bundle.getSerializable(MainActivity.CHARGE_POINT);
 
-        _textView_Title.setText(openChargePoint.toString());
+        String textView = "Name: " + openChargePoint.getTitle() + "\n"
+                + "Betreiber: " + openChargePoint.getOperatorTitle() + "\n"
+                + "Entfernung: " + openChargePoint.getDistance() + " km \n"
+                + "Zuletzt Aktualisiert: " + openChargePoint.getDateLastStatusUpdate() + "\n"
+                + "Adresse: " + openChargePoint.getStreet() + ", " + openChargePoint.getPostcode() + " " + openChargePoint.getTown() + "\n"
+                + openChargePoint.getCountry() + "\n\n"
+                + "Kontakt:\n"
+                + "Telefon: " + (openChargePoint.getTelephone().equals("null") ? "-" : openChargePoint.getTelephone())  + "\n"
+                + "Telefon2: " + (openChargePoint.getTelephone2().equals("null") ? "-" : openChargePoint.getTelephone2())  + "\n"
+                + "Email: " + (openChargePoint.geteMail().equals("null") ? "-" : openChargePoint.geteMail()) + "\n"
+                + "Webseite: " + (openChargePoint.getUrl().equals("null") ? "-" : openChargePoint.getUrl()) + "\n\n";
+
+        for(int i = 0, j = 1; i < openChargePoint.getConnections().size(); i++, j++) {
+            textView += "Anschluss" + j + ": \n"
+                     + "Name: " + openChargePoint.getConnections().get(i).getTitle() + "\n"
+                     + openChargePoint.getConnections().get(i).getLevelTitle() + "\n"
+                     + "Formaler Name: " + openChargePoint.getConnections().get(i).getFormalName() + "\n"
+                     + "Spannung: " + openChargePoint.getConnections().get(i).getVoltage() + " V \n"
+                     + "Stromsträrke: " + openChargePoint.getConnections().get(i).getAmps() + " A \n"
+                     + "Leistung: " + openChargePoint.getConnections().get(i).getPowerKW() + " kW \n"
+                     + "Schnellladen: " + (openChargePoint.getConnections().get(i).isFastCharge() ? "Ja" : "Nein");
+        }
+
+        _textView_Title.setText(textView);
 
         //Beim Klick auf den Navigations-Button wird ein Intent erzeugt, dass mit den
         // Geokoordinaten bestueckt an die Methode startActivity uebergeben wird
